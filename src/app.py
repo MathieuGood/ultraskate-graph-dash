@@ -17,9 +17,6 @@ data = json.load(json_file)
 json_file.close()
 
 
-
-
-
 parsed_riders_data = parse_event_data(data)
 df = pd.DataFrame(parsed_riders_data)
 

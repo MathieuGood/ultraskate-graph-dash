@@ -14,9 +14,10 @@ class LineChart:
             y="miles",
             color="name",
             labels={"hours": "Hours", "miles": "Miles", "name": "Rider"},
+
         )
 
-        fig.update_layout(showlegend=False)
+        fig.update_layout(showlegend=False, margin=dict(l=20, r=20, t=20, b=20))
 
         for rider in self.df["name"].unique():
             rider_df = self.df[self.df["name"] == rider]
@@ -27,7 +28,7 @@ class LineChart:
                 showarrow=True,
                 font=dict(size=12, color="black"),
                 align="center",
-                # xshift=60,
+                # xshift=60, # Shift text to the right
             )
 
         return fig

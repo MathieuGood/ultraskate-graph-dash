@@ -1,4 +1,5 @@
 from dash import *
+import flag
 
 
 class PageLayout:
@@ -13,20 +14,24 @@ class PageLayout:
             children=[
                 # Sidebar
                 html.Div(
-                    className="bg-gray-100 p-3",
+                    className="bg-gray-100 p-3 hidden lg:flex",
                     children=[
                         dcc.Checklist(
                             id="names_checklist",
-                            className="h-full overflow-y-scroll hidden md:block whitespace-nowrap",
+                            className="h-full overflow-y-scroll whitespace-nowrap border-5 p-2",
                             value=[rider["name"] for rider in self.data["riders"]],
                             options=[
                                 {
                                     "label": html.Span(
-                                        className="text-xs items-center whitespace-nowrap",
+                                        className="text-xs lg:text-sm items-center whitespace-nowrap",
                                         children=[
                                             html.Span(
-                                                className="font-bold",
+                                                className="font-bold w-4",
                                                 children=f" #{rank_index+1}",
+                                            ),
+                                            html.Span(
+                                                className="",
+                                                children=f" {flag.flag(rider['country'])}",
                                             ),
                                             html.Span(
                                                 className="",
@@ -47,7 +52,7 @@ class PageLayout:
                 ),
                 # Main content
                 html.Div(
-                    className="w-full flex flex-col",
+                    className="w-screen flex flex-col",
                     children=[
                         html.Div(
                             className="filters grid grid-cols-4 gap-2 p-4",
@@ -118,9 +123,13 @@ class PageLayout:
                             ],
                         ),
                         html.Div(
-                            className="w-full h-full",
+                            className="flex w-full h-full",
                             children=[
-                                dcc.Graph(id="graph", className="h-full"),
+                                dcc.Graph(
+                                    id="graph",
+                                    className="w-full h-full",
+                                    config={"displayModeBar": False},
+                                ),
                                 # dash_table.DataTable(
                                 #     data=parsed_riders_data,
                                 #     columns=columns,
