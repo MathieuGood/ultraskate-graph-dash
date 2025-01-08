@@ -23,7 +23,7 @@ class PageLayout:
                             options=[
                                 {
                                     "label": html.Span(
-                                        className="text-xs lg:text-sm items-center whitespace-nowrap",
+                                        className="text-xs lg:text-sm whitespace-nowrap",
                                         children=[
                                             html.Span(
                                                 className="font-bold w-4",
@@ -38,7 +38,7 @@ class PageLayout:
                                                 children=f" {rider['name']}",
                                             ),
                                             html.Span(
-                                                className="text-xs italic",
+                                                className="text-xs italic align-right",
                                                 children=f" {rider['miles'][-1]:.1f} miles",
                                             ),
                                         ],

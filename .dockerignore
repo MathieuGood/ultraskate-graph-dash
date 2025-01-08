@@ -1,0 +1,9 @@
+Dockerfile
+credentials.sh
+deploy.sh
+deploy
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
