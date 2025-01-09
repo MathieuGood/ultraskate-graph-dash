@@ -1,6 +1,5 @@
 from dash import html, dcc, get_asset_url
 import flag
-import os
 
 
 class PageLayout:
@@ -12,7 +11,7 @@ class PageLayout:
     def build_layout(self) -> html.Div:
         # Main Div
         return html.Div(
-            className="flex h-full h-screen",
+            className="flex h-full h-screen overflow-hidden",
             children=[
                 # Header
                 # html.Div(
@@ -27,6 +26,7 @@ class PageLayout:
                 #         ),
                 #     ],
                 # ),
+                #
                 # Sidebar
                 html.Div(
                     className="bg-gray-100 p-3 hidden lg:flex border-2 rounded shadow-lg m-1",
@@ -70,14 +70,22 @@ class PageLayout:
                     className="w-screen flex flex-col",
                     children=[
                         html.Div(
-                            className="filters grid grid-cols-4 gap-2 p-4",
+                            className="filters grid grid-cols-6 gap-2 p-4",
                             children=[
                                 # Country dropdown
                                 dcc.Dropdown(
                                     id="country_dropdown",
                                     placeholder="Country",
                                     options=[
-                                        {"label": country, "value": country}
+                                        {
+                                            "label": [
+                                                html.Span(
+                                                    className="whitespace-nowrap",
+                                                    children=f"{flag.flag(country)} {country}",
+                                                ),
+                                            ],
+                                            "value": country,
+                                        }
                                         for country in self.df["country"].unique()
                                     ],
                                     value=[
@@ -127,13 +135,13 @@ class PageLayout:
                                 html.Button(
                                     "Top 10",
                                     id="top_10_riders_button",
-                                    className="bg-blue-500 text-white p-2 rounded",
+                                    className="text-xs md:text-sm bg-blue-500 text-white p-1 md:p-2 rounded",
                                 ),
                                 # All riders button
                                 html.Button(
                                     "All Riders",
                                     id="all_riders_button",
-                                    className="bg-red-500 text-white p-2 rounded",
+                                    className="text-xs md:text-sm bg-red-500 text-white p-2 rounded",
                                 ),
                             ],
                         ),
