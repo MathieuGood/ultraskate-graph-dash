@@ -6,13 +6,14 @@ import flag
 def FiltersBar(
     className: str, event_data: dict, df: pd.DataFrame, data_filenames: list[str]
 ) -> html.Div:
-
+    filter_dropdown_classname = "text-xs md:text-sm"
     return html.Div(
         className=className,
         children=[
             # Country dropdown
             dcc.Dropdown(
                 id="country_dropdown",
+                className=filter_dropdown_classname,
                 placeholder="Country",
                 options=[
                     {
@@ -31,6 +32,7 @@ def FiltersBar(
             # Division dropdown
             dcc.Dropdown(
                 id="division_dropdown",
+                className=filter_dropdown_classname,
                 placeholder="Division",
                 options=[
                     {"label": division, "value": division}
@@ -41,6 +43,7 @@ def FiltersBar(
             # Discipline dropdown
             dcc.Dropdown(
                 id="discipline_dropdown",
+                className=filter_dropdown_classname,
                 placeholder="Discipline",
                 options=[
                     {"label": discipline, "value": discipline}
@@ -51,6 +54,7 @@ def FiltersBar(
             # Age dropdown
             dcc.Dropdown(
                 id="age_dropdown",
+                className=filter_dropdown_classname,
                 placeholder="Age",
                 options=[{"label": age, "value": age} for age in df["age"].unique()],
                 value=[rider["age"] for rider in event_data["riders"]],
@@ -69,6 +73,7 @@ def FiltersBar(
             ),
             dcc.Dropdown(
                 id="event_dropdown",
+                className=filter_dropdown_classname,
                 placeholder="Event",
                 options=data_filenames,
                 value=data_filenames[-1],
