@@ -26,7 +26,6 @@ app = Dash(name=__name__, external_scripts=["https://cdn.tailwindcss.com"])
 app.layout = PageLayout(data=data, df=df).layout
 
 
-
 @app.callback(
     Output(component_id="graph", component_property="figure"),
     Output("names_checklist", "value"),
@@ -51,15 +50,20 @@ def update_graph_and_checklist(
     selected_disciplines,
     selected_ages,
     top_10_clicks,
-    reset_clicks,
+    all_riders_clicks,
     names_options,
 ):
-    ctx = dash.callback_context
+    context = dash.callback_context
     filtered_df = df.copy()
 
-    # Determine which button triggered the callback
-    if ctx.triggered:
-        button_id = ctx.triggered[0]["prop_id"].split(".")[0]
+    if context.triggered_id == "names_checklist":
+        filtered_df = filtered_df[filtered_df["name"].isin(riders)]
+
+        figure = LineChart(df=filtered_df).figure
+        return figure, riders, None, None, None, None
+
+    if context.triggered:
+        button_id = context.triggered[0]["prop_id"].split(".")[0]
         if button_id == "top_10_riders_button":
             filtered_df = df[(df["rank"] >= 1) & (df["rank"] <= 10)]
             top_10_riders = filtered_df["name"].unique().tolist()
@@ -67,16 +71,15 @@ def update_graph_and_checklist(
             return figure, top_10_riders, None, None, None, None
 
         elif button_id == "all_riders_button":
-            filtered_df = df.copy()
             all_riders = filtered_df["name"].unique().tolist()
             figure = LineChart(df=filtered_df).figure
             return figure, all_riders, None, None, None, None
 
     filters = [
-        {"name": "country", "content": selected_countries},
-        {"name": "division", "content": selected_divisions},
-        {"name": "discipline", "content": selected_disciplines},
-        {"name": "age", "content": selected_ages},
+        {"col_name": "country", "content": selected_countries},
+        {"col_name": "division", "content": selected_divisions},
+        {"col_name": "discipline", "content": selected_disciplines},
+        {"col_name": "age", "content": selected_ages},
     ]
 
     for filter in filters:
@@ -85,7 +88,7 @@ def update_graph_and_checklist(
                 content = [filter["content"]]
             else:
                 content = filter["content"]
-            filtered_df = filtered_df[filtered_df[filter["name"]].isin(content)]
+            filtered_df = filtered_df[filtered_df[filter["col_name"]].isin(content)]
 
     figure = LineChart(df=filtered_df).figure
 
