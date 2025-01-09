@@ -1,12 +1,9 @@
-from dash import Dash, Input, Output, State, ctx
+from dash import Dash, Input, Output, State, ctx, dcc
 import dash
 from components.PageLayout import PageLayout
-import pandas as pd
-import json
-import os
 from components.PxLineChart import PxLineChart
-from data_parser import parse_event_data
-from utils.path_utils import data_dir_path, events_files
+from utils.parsing_utils import parse_event_data
+from utils.path_utils import events_files
 from utils.json_utils import get_event_data_from_json
 
 
@@ -20,14 +17,14 @@ app.layout = PageLayout(event_data=event_data, df=df, data_filenames=events_file
 
 
 @app.callback(
-    Output("event_dropdown", "value"),
     Input("event_dropdown", "value"),
 )
 def on_event_update(selected_event):
-    print(selected_event)
-    event_data = get_event_data_from_json(selected_event)
-    df = parse_event_data(event_data)
-    print(df)
+    print(">>>>>>> ON EVENT UPDATE")
+    if selected_event:
+        print(selected_event)
+        # event_data = get_event_data_from_json(selected_event)
+        # df = parse_event_data(event_data)
 
 
 @app.callback(
@@ -57,6 +54,9 @@ def on_filter_update(
     all_riders_clicks,
     names_options,
 ):
+    print(">>>>>>> ON FILTER UPDATE")
+    print(ctx.triggered_id)
+
     filtered_df = df.copy()
 
     # Click on the names checklist
