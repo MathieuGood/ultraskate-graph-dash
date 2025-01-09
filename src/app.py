@@ -17,19 +17,22 @@ app.layout = PageLayout(event_data=event_data, df=df, data_filenames=events_file
 
 
 @app.callback(
+    Output("graph", "figure", allow_duplicate=True),
     Input("event_dropdown", "value"),
+    prevent_initial_call=True,
 )
 def on_event_update(selected_event):
     print(">>>>>>> ON EVENT UPDATE")
     if selected_event:
         print(selected_event)
-        # event_data = get_event_data_from_json(selected_event)
-        # df = parse_event_data(event_data)
+        event_data = get_event_data_from_json(selected_event)
+        df = parse_event_data(event_data)
+        return PxLineChart(df=df)
 
 
 @app.callback(
     Output("graph", "figure"),
-    Output("names_checklist", "value"),
+    Output("names_checklist", "value", allow_duplicate=True),
     Output("country_dropdown", "value"),
     Output("division_dropdown", "value"),
     Output("discipline_dropdown", "value"),
@@ -55,7 +58,7 @@ def on_filter_update(
     names_options,
 ):
     print(">>>>>>> ON FILTER UPDATE")
-    print(ctx.triggered_id)
+    print("Triggered by", ctx.triggered_id)
 
     filtered_df = df.copy()
 
