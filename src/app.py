@@ -48,7 +48,7 @@ def on_event_update(selected_event):
     prevent_initial_call=True,
 )
 def on_filter_update(
-    riders,
+    selected_riders,
     selected_countries,
     selected_divisions,
     selected_disciplines,
@@ -64,8 +64,8 @@ def on_filter_update(
 
     # Click on the names checklist
     if ctx.triggered_id == "names_checklist":
-        filtered_df = filtered_df[filtered_df["name"].isin(riders)]
-        return PxLineChart(df=filtered_df), riders, None, None, None, None
+        filtered_df = filtered_df[filtered_df["name"].isin(selected_riders)]
+        return PxLineChart(df=filtered_df), selected_riders, None, None, None, None
 
     # Click on one of the buttons
     if ctx.triggered:
