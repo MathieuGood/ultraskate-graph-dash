@@ -1,5 +1,6 @@
-from dash import *
+from dash import html, dcc, get_asset_url
 import flag
+import os
 
 
 class PageLayout:
@@ -9,12 +10,26 @@ class PageLayout:
         self.layout = self.build_layout()
 
     def build_layout(self) -> html.Div:
+        # Main Div
         return html.Div(
             className="flex h-full h-screen",
             children=[
+                # Header
+                # html.Div(
+                #     className="flex bg-blue-500 text-white p-3 h-12",
+                #     children=[
+                #         html.Img(
+                #             className="h-8 w-8", src=get_asset_url("longboard.svg")
+                #         ),
+                #         html.Span(
+                #             className="text-2xl font-bold",
+                #             children=f"Ultraskate Buddy",
+                #         ),
+                #     ],
+                # ),
                 # Sidebar
                 html.Div(
-                    className="bg-gray-100 p-3 hidden lg:flex border-2 rounded ring-2 ring-gray-300 ring-inset m-1",
+                    className="bg-gray-100 p-3 hidden lg:flex border-2 rounded shadow-lg m-1",
                     children=[
                         dcc.Checklist(
                             id="names_checklist",
@@ -50,7 +65,7 @@ class PageLayout:
                         ),
                     ],
                 ),
-                # Main content
+                # Filters & Graph
                 html.Div(
                     className="w-screen flex flex-col",
                     children=[
@@ -110,14 +125,14 @@ class PageLayout:
                                 ),
                                 # Top 10 riders button
                                 html.Button(
-                                    "Top 10 Riders",
+                                    "Top 10",
                                     id="top_10_riders_button",
                                     className="bg-blue-500 text-white p-2 rounded",
                                 ),
-                                # Reset filters button
+                                # All riders button
                                 html.Button(
-                                    "Reset Filters",
-                                    id="reset_filters_button",
+                                    "All Riders",
+                                    id="all_riders_button",
                                     className="bg-red-500 text-white p-2 rounded",
                                 ),
                             ],
@@ -129,6 +144,7 @@ class PageLayout:
                                     id="graph",
                                     className="w-full h-full",
                                     config={"displayModeBar": False},
+                                    responsive=True,
                                 ),
                                 # dash_table.DataTable(
                                 #     data=parsed_riders_data,

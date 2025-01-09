@@ -14,7 +14,6 @@ class LineChart:
             y="miles",
             color="name",
             labels={"hours": "Hours", "miles": "Miles", "name": "Rider"},
-
         )
 
         fig.update_layout(showlegend=False, margin=dict(l=20, r=20, t=20, b=20))

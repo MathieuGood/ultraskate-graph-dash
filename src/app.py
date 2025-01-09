@@ -1,4 +1,5 @@
-from dash import *
+from dash import Dash, dcc, html, Input, Output, State, callback_context
+import dash
 from app_layout import PageLayout
 import plotly.express as px
 import pandas as pd
@@ -20,45 +21,76 @@ json_file.close()
 parsed_riders_data = parse_event_data(data)
 df = pd.DataFrame(parsed_riders_data)
 
-app = Dash(external_scripts=["https://cdn.tailwindcss.com"])
+app = Dash(name=__name__, external_scripts=["https://cdn.tailwindcss.com"])
 
 app.layout = PageLayout(data=data, df=df).layout
 
 
 @app.callback(
+    Output("names_checklist", "value"),
+    Output("country_dropdown", "value"),
+    Output("division_dropdown", "value"),
+    Output("discipline_dropdown", "value"),
+    Output("age_dropdown", "value"),
+    Input("top_10_riders_button", "n_clicks"),
+    Input("all_riders_button", "n_clicks"),
+    State("names_checklist", "options"),
+    prevent_initial_call=True,
+)
+def update_filters(top_10_clicks, reset_clicks, names_options):
+    ctx = dash.callback_context
+
+    if not ctx.triggered:
+        return dash.no_update
+
+    button_id = ctx.triggered[0]["prop_id"].split(".")[0]
+
+    if button_id == "top_10_riders_button":
+        top_10_riders = (
+            df[(df["rank"] >= 1) & (df["rank"] <= 10)]["name"].unique().tolist()
+        )
+
+        return (
+            top_10_riders,
+            dash.no_update,
+            dash.no_update,
+            dash.no_update,
+            dash.no_update,
+        )
+    elif button_id == "all_riders_button":
+        return df["name"].unique().tolist(), None, None, None, None
+
+    return dash.no_update
+
+
+@app.callback(
     Output(component_id="graph", component_property="figure"),
-    [
-        Input(component_id="names_checklist", component_property="value"),
-        Input(component_id="country_dropdown", component_property="value"),
-        Input(component_id="division_dropdown", component_property="value"),
-        Input(component_id="discipline_dropdown", component_property="value"),
-        Input(component_id="age_dropdown", component_property="value"),
-    ],
+    Input(component_id="names_checklist", component_property="value"),
+    Input(component_id="country_dropdown", component_property="value"),
+    Input(component_id="division_dropdown", component_property="value"),
+    Input(component_id="discipline_dropdown", component_property="value"),
+    Input(component_id="age_dropdown", component_property="value"),
 )
 def update_line_chart(
     riders, selected_countries, selected_divisions, selected_disciplines, selected_ages
 ):
     filtered_df = df[df["name"].isin(riders)]
 
-    if selected_countries:
-        if not isinstance(selected_countries, list):
-            selected_countries = [selected_countries]
-        filtered_df = filtered_df[filtered_df["country"].isin(selected_countries)]
+    filters = [
+        {"name": "country", "content": selected_countries},
+        {"name": "division", "content": selected_divisions},
+        {"name": "discipline", "content": selected_disciplines},
+        {"name": "age", "content": selected_ages},
+    ]
 
-    if selected_divisions:
-        if not isinstance(selected_divisions, list):
-            selected_divisions = [selected_divisions]
-        filtered_df = filtered_df[filtered_df["division"].isin(selected_divisions)]
-
-    if selected_disciplines:
-        if not isinstance(selected_disciplines, list):
-            selected_disciplines = [selected_disciplines]
-        filtered_df = filtered_df[filtered_df["discipline"].isin(selected_disciplines)]
-
-    if selected_ages:
-        if not isinstance(selected_ages, list):
-            selected_ages = [selected_ages]
-        filtered_df = filtered_df[filtered_df["age"].isin(selected_ages)]
+    for filter in filters:
+        print(f"filter name : {filter['name']}, content: {filter['content']}")
+        if filter["content"]:
+            print(f"Content in filter {filter['name']} : {filter['content']}")
+            if not isinstance(filter["content"], list):
+                content = [filter["content"]]
+            filtered_df = filtered_df[filtered_df[filter["name"]].isin(content)]
+            print(f"df filtered with {filter['name']} filtered_df")
 
     figure = LineChart(df=filtered_df).figure
     return figure
