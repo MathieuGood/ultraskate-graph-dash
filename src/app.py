@@ -4,7 +4,6 @@ from app_layout import PageLayout
 import pandas as pd
 import json
 import os
-
 from components.LineChart import LineChart
 from data_parser import parse_event_data
 
