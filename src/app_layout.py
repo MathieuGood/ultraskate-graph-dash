@@ -14,11 +14,11 @@ class PageLayout:
             children=[
                 # Sidebar
                 html.Div(
-                    className="bg-gray-100 p-3 hidden lg:flex",
+                    className="bg-gray-100 p-3 hidden lg:flex border-2 rounded ring-2 ring-gray-300 ring-inset m-1",
                     children=[
                         dcc.Checklist(
                             id="names_checklist",
-                            className="h-full overflow-y-scroll whitespace-nowrap border-5 p-2",
+                            className="h-full overflow-y-scroll whitespace-nowrap",
                             value=[rider["name"] for rider in self.data["riders"]],
                             options=[
                                 {

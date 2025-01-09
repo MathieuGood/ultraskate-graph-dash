@@ -19,7 +19,6 @@ json_file.close()
 
 parsed_riders_data = parse_event_data(data)
 df = pd.DataFrame(parsed_riders_data)
-print(df)
 
 app = Dash(external_scripts=["https://cdn.tailwindcss.com"])
 
