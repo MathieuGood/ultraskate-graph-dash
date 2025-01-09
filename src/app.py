@@ -19,6 +19,7 @@ json_file.close()
 
 parsed_riders_data = parse_event_data(data)
 df = pd.DataFrame(parsed_riders_data)
+print(df)
 
 app = Dash(external_scripts=["https://cdn.tailwindcss.com"])
 
@@ -65,4 +66,4 @@ def update_line_chart(
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=9004)
+    app.run(host="0.0.0.0", debug=True, port=9004)

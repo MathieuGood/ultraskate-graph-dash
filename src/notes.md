@@ -5,4 +5,4 @@
 [ ] Find a way to to display cleanly rider names on the graph
 [ ] Add logic to "Top 10 Riders" and "Reset Filters"
 [ ] Insert rider checklist into a sidebar opened by burger menu on small screens
-[ ] Write Dockerfile
+[x] Write Dockerfile

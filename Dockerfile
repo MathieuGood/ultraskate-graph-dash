@@ -1,13 +1,14 @@
 FROM python:3.12-slim
 
-WORKDIR /src
+WORKDIR /app
 
-COPY requirements.txt .
+COPY requirements.txt /app/
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY src /app/src
+COPY data /app/data
 
 EXPOSE 9004
 
-CMD ["python3", "src/app.py"]
+CMD ["python", "src/app.py"]
