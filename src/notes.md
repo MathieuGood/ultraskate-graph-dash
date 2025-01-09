@@ -10,3 +10,4 @@
 [ ] Add slider filter for time range
 [ ] Add event selector
 [x] Write Dockerfile
+[ ] Split all PageLayout content into separate components

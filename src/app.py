@@ -1,25 +1,33 @@
 from dash import Dash, Input, Output, State, ctx
 import dash
-from app_layout import PageLayout
+from components.PageLayout import PageLayout
 import pandas as pd
 import json
 import os
-from components.LineChart import LineChart
+from components.PxLineChart import PxLineChart
 from data_parser import parse_event_data
+from utils.path_utils import data_dir_path, events_files
+from utils.json_utils import get_event_data_from_json
 
 
-json_file_path = os.path.join(
-    os.path.dirname(__file__), "..", "data", "miami_2024.json"
-)
-json_file = open(json_file_path)
-data = json.load(json_file)
-json_file.close()
+event_data = get_event_data_from_json(events_files[-1])
+df = parse_event_data(event_data)
 
-parsed_riders_data = parse_event_data(data)
-df = pd.DataFrame(parsed_riders_data)
 
 app = Dash(name=__name__, external_scripts=["https://cdn.tailwindcss.com"])
-app.layout = PageLayout(data=data, df=df).layout
+
+app.layout = PageLayout(event_data=event_data, df=df, data_filenames=events_files)
+
+
+@app.callback(
+    Output("event_dropdown", "value"),
+    Input("event_dropdown", "value"),
+)
+def on_event_update(selected_event):
+    print(selected_event)
+    event_data = get_event_data_from_json(selected_event)
+    df = parse_event_data(event_data)
+    print(df)
 
 
 @app.callback(
@@ -39,7 +47,7 @@ app.layout = PageLayout(data=data, df=df).layout
     State("names_checklist", "options"),
     prevent_initial_call=True,
 )
-def update_graph_and_checklist(
+def on_filter_update(
     riders,
     selected_countries,
     selected_divisions,
@@ -51,22 +59,26 @@ def update_graph_and_checklist(
 ):
     filtered_df = df.copy()
 
+    # Click on the names checklist
     if ctx.triggered_id == "names_checklist":
         filtered_df = filtered_df[filtered_df["name"].isin(riders)]
-        return LineChart(df=filtered_df).figure, riders, None, None, None, None
+        return PxLineChart(df=filtered_df), riders, None, None, None, None
 
+    # Click on one of the buttons
     if ctx.triggered:
         button_id = ctx.triggered[0]["prop_id"].split(".")[0]
+
         if button_id == "top_10_riders_button":
             filtered_df = df[(df["rank"] >= 1) & (df["rank"] <= 10)]
             top_10_riders = filtered_df["name"].unique().tolist()
-            figure = LineChart(df=filtered_df).figure
+            figure = PxLineChart(df=filtered_df)
             return figure, top_10_riders, None, None, None, None
 
         elif button_id == "all_riders_button":
             all_riders = filtered_df["name"].unique().tolist()
-            return LineChart(df=filtered_df).figure, all_riders, None, None, None, None
+            return PxLineChart(df=filtered_df), all_riders, None, None, None, None
 
+    # Apply filters
     filters = [
         {"col_name": "country", "content": selected_countries},
         {"col_name": "division", "content": selected_divisions},
@@ -85,7 +97,7 @@ def update_graph_and_checklist(
     updated_checklist_values = filtered_df["name"].unique().tolist()
 
     return (
-        LineChart(df=filtered_df).figure,
+        PxLineChart(df=filtered_df),
         updated_checklist_values,
         dash.no_update,
         dash.no_update,
