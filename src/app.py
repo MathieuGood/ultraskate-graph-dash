@@ -1,7 +1,6 @@
-from dash import Dash, dcc, html, Input, Output, State, callback_context
+from dash import Dash, Input, Output, State, ctx
 import dash
 from app_layout import PageLayout
-import plotly.express as px
 import pandas as pd
 import json
 import os
@@ -17,17 +16,15 @@ json_file = open(json_file_path)
 data = json.load(json_file)
 json_file.close()
 
-
 parsed_riders_data = parse_event_data(data)
 df = pd.DataFrame(parsed_riders_data)
 
 app = Dash(name=__name__, external_scripts=["https://cdn.tailwindcss.com"])
-
 app.layout = PageLayout(data=data, df=df).layout
 
 
 @app.callback(
-    Output(component_id="graph", component_property="figure"),
+    Output("graph", "figure"),
     Output("names_checklist", "value"),
     Output("country_dropdown", "value"),
     Output("division_dropdown", "value"),
@@ -53,17 +50,14 @@ def update_graph_and_checklist(
     all_riders_clicks,
     names_options,
 ):
-    context = dash.callback_context
     filtered_df = df.copy()
 
-    if context.triggered_id == "names_checklist":
+    if ctx.triggered_id == "names_checklist":
         filtered_df = filtered_df[filtered_df["name"].isin(riders)]
+        return LineChart(df=filtered_df).figure, riders, None, None, None, None
 
-        figure = LineChart(df=filtered_df).figure
-        return figure, riders, None, None, None, None
-
-    if context.triggered:
-        button_id = context.triggered[0]["prop_id"].split(".")[0]
+    if ctx.triggered:
+        button_id = ctx.triggered[0]["prop_id"].split(".")[0]
         if button_id == "top_10_riders_button":
             filtered_df = df[(df["rank"] >= 1) & (df["rank"] <= 10)]
             top_10_riders = filtered_df["name"].unique().tolist()
@@ -72,8 +66,7 @@ def update_graph_and_checklist(
 
         elif button_id == "all_riders_button":
             all_riders = filtered_df["name"].unique().tolist()
-            figure = LineChart(df=filtered_df).figure
-            return figure, all_riders, None, None, None, None
+            return LineChart(df=filtered_df).figure, all_riders, None, None, None, None
 
     filters = [
         {"col_name": "country", "content": selected_countries},
@@ -90,12 +83,10 @@ def update_graph_and_checklist(
                 content = filter["content"]
             filtered_df = filtered_df[filtered_df[filter["col_name"]].isin(content)]
 
-    figure = LineChart(df=filtered_df).figure
-
     updated_checklist_values = filtered_df["name"].unique().tolist()
 
     return (
-        figure,
+        LineChart(df=filtered_df).figure,
         updated_checklist_values,
         dash.no_update,
         dash.no_update,
