@@ -71,11 +71,25 @@ def FiltersBar(
                 id="all_riders_button",
                 className="text-xs md:text-sm bg-red-500 text-white p-2 rounded",
             ),
+            # Event dropdown
             dcc.Dropdown(
                 id="event_dropdown",
                 className=filter_dropdown_classname,
                 placeholder="Event",
-                options=data_filenames,
+                options=[
+                    {
+                        "label": [
+                            html.Span(
+                                className="whitespace-nowrap",
+                                children=f"{
+                                    " ".join(filename.capitalize().rstrip(".json").split("_"))
+                                    }",
+                            ),
+                        ],
+                        "value": filename,
+                    }
+                    for filename in data_filenames
+                ],
                 value=data_filenames[-1],
             ),
         ],
